@@ -1,0 +1,47 @@
+.homer{
+	background: url(homer.jpg);
+	width: 312.5px;
+	height: 312.5px;
+ }
+/*top left*/
+ @media screen 
+	and (max-width: 600px) {
+		.homer{background-position: 0 0;}
+	}
+
+/*top right*/
+@media screen 
+	and (min-width: 1400px)
+	and (max-width: 1600px) {
+		.homer{background-position: 312.5px 0;}
+	}
+/*bottom left*/
+@media screen 
+	and (min-width: 1200px)
+	and (max-width: 1400px) {
+		.homer{background-position: 0 312.5px;}
+ 	}
+/*bottom right*/
+@media screen 
+	and (min-width: 1000px)
+	and (max-width: 1200px) {
+		.homer{background-position: 312.5px 312.5px;}
+	}
+/*bottom left*/
+ @media screen 
+ 	and (min-width: 800px)
+ 	and (max-width: 1000px) {
+ 		.homer{background-position: 0 312.5px;}
+ 	}
+/*top right*/
+@media screen 
+	and (min-width: 600px)
+	and (max-width: 800px) {
+		.homer{background-position: 312.5px 0;}
+	}
+
+/*top left*/
+ @media screen 
+	and (max-width: 600px) {
+		.homer{background-position: 0 0;}
+	}
