@@ -1,0 +1,20 @@
+body{
+	background-image: url("springfield.jpg"); 
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+#title{
+	font-family: Courier;
+	font-size: 50px;
+}
+
+#lyrics{
+	height: 200px;
+	width: 400px;
+	background-color: #ccffff;
+	float: right;
+	font-family: Courier;
+	font-size: 20px;
+	font-weight: bold;
+}
