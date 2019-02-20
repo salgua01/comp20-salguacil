@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Union Strike Folk Song</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+<h1 id="title">Union Strike Folk Song</h1>
+
+<video src="https://www.cs.tufts.edu/comp/20/butwehavethepower.mp4" id="butwehavethepower" controls></video>
+<div id="lyrics"></div>
+
+<script>
+	lyrics = document.getElementById("lyrics");
+	vid = document.getElementsByTagName("video")[0];
+	vid.addEventListener("timeupdate", function lyrfn(){
+		cTime = vid.currentTime;
+		console.log("holi")
+		if (cTime >= 6 && cTime <= 17) {
+			lyrics.innerHTML = "<p>Come gather round, children</p> <p>It's high time ye learned</p> <p>'Bout a hero named Homer</p> <p>And a devil named Burns</p>";
+		}
+		else if (cTime > 17 && cTime <= 27){
+			lyrics.innerHTML = "<p>We'll march 'till we drop</p> <p>The girls and the fellas.</p> <p>We'll fight 'till the death</p> <p>Or else fold like umbrellas.</p>";
+		}
+		else if (cTime >= 38 && cTime <= 45){
+			lyrics.innerHTML = "<p>So we'll march day and night </p> <p>By the big cooling tower.</p> <p> They have the plant </p>";
+		}
+		else if (cTime > 45 && cTime <= 50){
+			lyrics.innerHTML = "<p>But we have the power</p>";
+		}
+		else if (cTime > 53 && cTime <= 54){
+			lyrics.innerHTML = "<p>Lenny: Now do 'Classical Gas!'</p>";
+		}
+		else if (cTime >= 73 && cTime <= 80){
+			lyrics.innerHTML = "<p>So we'll march day and night </p> <p>By the big cooling tower.</p> <p> They have the plant </p>";
+		}
+		else if (cTime >= 80 && cTime <= 82){
+			lyrics.innerHTML = "<p>But we have the power</p>";
+		}
+		else if (cTime > 82 && cTime <= 89){
+			lyrics.innerHTML = "<p>So we'll march day and night </p> <p>By the big cooling tower.</p> <p> They have the plant </p>";
+		}
+		else if (cTime > 89 && cTime <= 91){
+			lyrics.innerHTML = "<p>But we have the power</p>";
+		}
+		else{
+			lyrics.innerHTML = " ";
+		}
+	}
+	)
+
+</script>
+</body>
+</html>	
