@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>LiftKnockOff</title>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="liftstyle">
+	<script async defer
+  	src="https://maps.googleapis.com/maps/api/js?key=
+	AIzaSyA3xvipDJOQ3Rax2NxUrn_qaViSOvpNJ-w
+	&callback=initMap"></script>
+
+</head>
+<body onload="initMap()">
+	<div id="map"></div>
+	<div id="infobox"></div>
+
+<script type="text/javascript">
+	var map;
+	var myLat = 0;
+	var myLng = 0;
+	function initMap(){
+		map = new google.maps.Map(document.getElementById('map'), {
+			center: {/*set a center here (tufts)*/},
+			zoom: /*set a zoom here*/
+		});
+		getMyLocation();
+		loadUsers();
+	}
+
+	function getMyLocation() {
+		navigator.geolocation.getCurrentPosition(function(myPos){
+			myLat = myPos.coords.latitude;
+			myLng = myPos.coords.longitude;
+			setMarker(myLat, myLng, "My position", true);
+		});
+	}
+
+	function setMarker(lat, long, tit, mine){
+		var location = new google.maps.LatLng(lat, lng);
+		var marker = new google.maps.Marker({
+			position: location,
+			map: map,
+			title: tit
+		});
+		if(mine){
+			marker{
+				icon: 'cow.png'
+			}
+		}else{
+			marker{
+				icon: 'xicon.png'
+			}
+		}
+	}
+
+	/*Con esto yo les mando mi info y ellos me dan la info de los que son lo contrario a mi*/
+	function loadUsers(){
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', "https://hans-moleman.herokuapp.com/rides");
+		console.log("opened JSON");
+
+		xhr.onreadystatechange = function () {
+			console.log("function started");
+			/*basically means that the post is done and successful*/
+			if(xhr.readyState == 4 && xhr.status = 200){
+				var all_info = xhr.responseText;
+				var data = JSON.parse(all_info);
+				for (var i = 0; i < data.length; i++) {
+					setMarker(data[i].lat, data[i].lng, data[i].username, false)
+				}	
+			}
+		}
+	} 
+
+
+</script>
+</body>
+</html>
