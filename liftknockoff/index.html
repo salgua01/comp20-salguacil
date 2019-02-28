@@ -12,6 +12,7 @@
 	const myUsername = "Z9jVw7GQ";
 	var myLat = 42.406292;
 	var myLng = -71.119750;
+	var all_markers = [];
 
 	/*Function to create map. Adds position of the user and the otehers*/
 	function initMap(){
@@ -46,6 +47,65 @@
 		}else if(tit == "WEINERMOBILE"){
 			marker.icon = 'weinermobile.png';
 		}
+		all_markers.push(marker);
+	}
+	/*Simple function to turn meters into miles*/
+	function toMiles(meters){
+		return meters/1609.344;
+	}
+	/*Funtion to find nearest passenger.
+	Returns a marker, with its position and title
+	Used to show in infowindow when driver is selected*/
+	function findNearest(marker){
+		var closer = null;
+		var smallestDist = 6378137;
+		for(var i = 0; i < all_markers.length; i++){
+			if(marker.title != all_markers[i].title){
+				var currDist = google.maps.geometry.spherical.computeDistanceBetween(marker.position, all_markers[i].position)
+				if(currDist < smallestDist){
+					closer = all_markers[i];
+				}
+			}
+		}
+		return closer;
+	}
+
+	/*Function that finds any marker by its title if it exists. If it doesn't, it returns 0. 
+	Used to find Weinermobile and user marker*/
+	function findMarker(markerName){
+		for (var i = 0; i < all_markers.length; i++) {
+			if(all_markers[i].title == markerName)
+			{
+				return all_markers[i];
+			}
+		}
+		return 0;
+	}
+	/*Function to set the content of the info window that opens at the click of the user.*/
+	function setInfoWindow(marker){
+
+		//No se como cojones pero tengo que hacer que responda a los clicks :)
+		var contentString = '<p>Username: ' + marker.title + ' </p>';
+		if(marker.title == myUsername){
+			var closerPass = findNearest(marker);
+			var closerDist = toMiles(google.maps.geometry.spherical.computeDistanceBetween(marker.position, closerPass.position));
+
+			contentString += '<p>Distance to closer passenger: ' + closerDist + '</p>';
+
+			if(findMarker("WEINERMOBILE") != 0){
+				var weiner = findMarker("WEINERMOBILE");
+				var distToWeiner = toMiles(google.maps.geometry.spherical.computeDistanceBetween(marker.position, weiner.position))
+				contentString += '<p>Distance to Weinermobile: ' + distToWeiner +'</p>';
+			}
+		}else{
+			var myMarker = findMarker(myUsername);
+			var distFromMe = toMiles(google.maps.geometry.spherical.computeDistanceBetween(marker.position, myMarker.position));
+			contentString += '<p>Distance from you: ' + distFromMe +'</p>';
+		}
+
+		var infowindow = new google.maps.InfoWindow({
+			content: contentString
+		})
 	}
 
 	/*Function to load users from API and set their markers in the map*/
