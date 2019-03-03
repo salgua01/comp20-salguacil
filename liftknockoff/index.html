@@ -6,19 +6,23 @@
 	<meta name="viewport" content="initial-scale=1.0">
 	<link rel="stylesheet" type="text/css" href="liftstyle.css">
 <script async defer
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpT9gY9pILYh8MR61L3o-wekmz_Ex7Bbc&callback=initMap"></script>
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpT9gY9pILYh8MR61L3o-wekmz_Ex7Bbc&libraries=geometry&callback=initMap"></script>
 <script type="text/javascript">
 	var map;
 	const myUsername = "Z9jVw7GQ";
 	var myLat = 42.406292;
 	var myLng = -71.119750;
 	var all_markers = [];
-
-	/*Function to create map. Adds position of the user and the otehers*/
+	var myCondition = undefined;
+	var infoWindow 
+	/*Function to create map. Adds position of the user and the others*/
 	function initMap(){
 		map = new google.maps.Map(document.getElementById('map'), {
 			center: {lat: 42.406292, lng: -71.119750},
 			zoom: 15});
+		infoWindow = new google.maps.InfoWindow({
+			content: ""
+		});
 		getMyLocation();
 		loadUsers();
 	}
@@ -40,13 +44,19 @@
 			position: location,
 			map: map,
 			title: tit,
-			icon: 'passenger.png'
+			icon: 'car.png'
 		});
 		if(tit == myUsername){
-			marker.icon = 'car.png';
+			marker.icon = 'myicon.png';
 		}else if(tit == "WEINERMOBILE"){
 			marker.icon = 'weinermobile.png';
+		}else if(myCondition == "vehicle"){
+			marker.icon = 'passenger.png';
 		}
+		marker.addListener('click', function(){
+			infoWindow.setContent(contentInfoWindow(marker));
+			infoWindow.open(map, marker)
+		});
 		all_markers.push(marker);
 	}
 	/*Simple function to turn meters into miles*/
@@ -81,31 +91,34 @@
 		}
 		return 0;
 	}
-	/*Function to set the content of the info window that opens at the click of the user.*/
-	function setInfoWindow(marker){
-
-		//No se como cojones pero tengo que hacer que responda a los clicks :)
+	/*Function to set the content of the info window when it is given a marker. Returns a string containing the necessary information*/
+	function contentInfoWindow(marker){
 		var contentString = '<p>Username: ' + marker.title + ' </p>';
 		if(marker.title == myUsername){
 			var closerPass = findNearest(marker);
-			var closerDist = toMiles(google.maps.geometry.spherical.computeDistanceBetween(marker.position, closerPass.position));
-
-			contentString += '<p>Distance to closer passenger: ' + closerDist + '</p>';
-
+			if(closerPass != null){
+				var closerDist = toMiles(google.maps.geometry.spherical.computeDistanceBetween(marker.position, closerPass.position));
+				if(myCondition == "passenger"){
+					contentString += '<p>Distance to closer vehicle: ' + closerDist + '</p>';
+				}else{
+					contentString += '<p>Distance to closer passenger: ' + closerDist + '</p>';
+				}
+			}else{
+				contentString += "<p> There are no other users";
+			}
 			if(findMarker("WEINERMOBILE") != 0){
 				var weiner = findMarker("WEINERMOBILE");
 				var distToWeiner = toMiles(google.maps.geometry.spherical.computeDistanceBetween(marker.position, weiner.position))
-				contentString += '<p>Distance to Weinermobile: ' + distToWeiner +'</p>';
+				contentString += '<p>The Weinermobile is  ' + distToWeiner +' miles away from me!</p>';
+			}else{
+				contentString += '<p> The Weinermobile is nowhere to be seen</p>'
 			}
 		}else{
 			var myMarker = findMarker(myUsername);
 			var distFromMe = toMiles(google.maps.geometry.spherical.computeDistanceBetween(marker.position, myMarker.position));
 			contentString += '<p>Distance from you: ' + distFromMe +'</p>';
 		}
-
-		var infowindow = new google.maps.InfoWindow({
-			content: contentString
-		})
+		return contentString;
 	}
 
 	/*Function to load users from API and set their markers in the map*/
@@ -117,19 +130,28 @@
 			if(xhr.readyState == 4 && xhr.status == 200){
 				var all_info = xhr.responseText;
 				var data = JSON.parse(all_info);
-				var num_veh = data.vehicles.length;
-
-				for (var i = 0; i < num_veh; i++) {
-					var car = data.vehicles[i];
-					setMarker(data.vehicles[i].lat, data.vehicles[i].lng, data.vehicles[i].username);
-				}	
-			}
+				if(data.passengers == undefined){
+					var num_veh = data.vehicles.length;
+					myCondition = "passenger";
+					for (var i = 0; i < num_veh; i++) {
+						var car = data.vehicles[i];
+						setMarker(data.vehicles[i].lat, data.vehicles[i].lng, data.vehicles[i].username);
+					}	
+				}else if (data.vehicles == undefined){
+					var num_pas = data.passengers.length;
+					myCondition = "vehicle"
+					for (var i = 0; i < num_veh; i++) {
+						var car = data.passengers[i];
+						setMarker(data.passengers[i].lat, data.passengers[i].lng, data.passengers[i].username);
+					}	
+				}
 			else if(xhr.readyState == 4 && xhr.status != 200){
 				document.getElementById("infobox").innerHTML = "<p>Whoops, something went terribly wrong</p>";
+				}
 			}
-		}
 		var request = "username="+myUsername+"&lat="+myLat+"&lng="+ myLng;
 		xhr.send(request);
+		}
 	} 
 
 </script>
@@ -138,6 +160,5 @@
 
 <body onload="initMap()">
 	<div id="map"></div>
-	<div id="infobox"></div>
 </body>
 </html>
