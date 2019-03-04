@@ -10,11 +10,14 @@
 <script type="text/javascript">
 	var map;
 	const myUsername = "Z9jVw7GQ";
-	var myLat = 42.406292;
-	var myLng = -71.119750;
+	var myLat = 0;
+	var myLng = 0;
+	//Variable to hold every marker and be able to loop through them
 	var all_markers = [];
+	//variable that holds the information of the user, if it is either driver or passenger
 	var myCondition = undefined;
-	var infoWindow 
+	var infoWindow
+
 	/*Function to create map. Adds position of the user and the others*/
 	function initMap(){
 		map = new google.maps.Map(document.getElementById('map'), {
@@ -59,10 +62,12 @@
 		});
 		all_markers.push(marker);
 	}
+
 	/*Simple function to turn meters into miles*/
 	function toMiles(meters){
 		return meters/1609.344;
 	}
+
 	/*Funtion to find nearest passenger.
 	Returns a marker, with its position and title
 	Used to show in infowindow when driver is selected*/
@@ -91,6 +96,7 @@
 		}
 		return 0;
 	}
+
 	/*Function to set the content of the info window when it is given a marker. Returns a string containing the necessary information*/
 	function contentInfoWindow(marker){
 		var contentString = '<p>Username: ' + marker.title + ' </p>';
@@ -149,10 +155,10 @@
 				document.getElementById("infobox").innerHTML = "<p>Whoops, something went terribly wrong</p>";
 				}
 			}
+		}
 		var request = "username="+myUsername+"&lat="+myLat+"&lng="+ myLng;
 		xhr.send(request);
-		}
-	} 
+	}
 
 </script>
 
