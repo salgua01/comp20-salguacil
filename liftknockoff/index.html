@@ -68,17 +68,31 @@
 		return meters/1609.344;
 	}
 
-	/*Funtion to find nearest passenger.
+	/*Funtion to find nearest passenger. 
+	Takes the original marker and a bool parameter that will be true in case we're looking for the weinermobile
 	Returns a marker, with its position and title
-	Used to show in infowindow when driver is selected*/
-	function findNearest(marker){
+	Used to show information in infowindow when driver is selected*/
+	function findNearest(marker, lookForWeiner){
 		var closer = null;
 		var smallestDist = 6378137;
-		for(var i = 0; i < all_markers.length; i++){
-			if(marker.title != all_markers[i].title){
-				var currDist = google.maps.geometry.spherical.computeDistanceBetween(marker.position, all_markers[i].position)
-				if(currDist < smallestDist){
-					closer = all_markers[i];
+		if(lookForWeiner){
+			for(var i = 0; i < all_markers.length; i++){
+				if(all_markers[i].title == "WEINERMOBILE"){
+					var currDist = google.maps.geometry.spherical.computeDistanceBetween(marker.position, all_markers[i].position)
+					if(currDist < smallestDist){
+						closer = all_markers[i];
+						smallestDist = currDist;
+					}
+				}
+			}
+		}else{
+			for(var i = 0; i < all_markers.length; i++){
+				if(marker.title != all_markers[i].title){
+					var currDist = google.maps.geometry.	spherical.computeDistanceBetween(marker.position, all_markers[i].position)
+					if(currDist < smallestDist){
+						closer = all_markers[i];
+						smallestDist = currDist;
+					}	
 				}
 			}
 		}
@@ -101,7 +115,7 @@
 	function contentInfoWindow(marker){
 		var contentString = '<p>Username: ' + marker.title + ' </p>';
 		if(marker.title == myUsername){
-			var closerPass = findNearest(marker);
+			var closerPass = findNearest(marker, false);
 			if(closerPass != null){
 				var closerDist = toMiles(google.maps.geometry.spherical.computeDistanceBetween(marker.position, closerPass.position));
 				if(myCondition == "passenger"){
@@ -114,7 +128,8 @@
 			}
 			if(findMarker("WEINERMOBILE") != 0){
 				var weiner = findMarker("WEINERMOBILE");
-				var distToWeiner = toMiles(google.maps.geometry.spherical.computeDistanceBetween(marker.position, weiner.position))
+				var closerWeiner = findNearest(marker, true)
+				var distToWeiner = toMiles(google.maps.geometry.spherical.computeDistanceBetween(marker.position, closerWeiner.position))
 				contentString += '<p>The Weinermobile is  ' + distToWeiner +' miles away from me!</p>';
 			}else{
 				contentString += '<p> The Weinermobile is nowhere to be seen</p>'
