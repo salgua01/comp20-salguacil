@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Security Report</title>
+	<meta  charset="UTF-8" lang="en">
+</head>
+<body>
+<h1> Security Report of Julie Yeung's assignment 3 by Sandra Alguacil</h1>
+<h3>INTRODUCTION</h3>
+<p>This is the security report of a new web app that intends to enter the car sharing market. This product consists on two sides: the client and the server side. This report focuses essentially in the server side, since it is more prone to include security issues</p>
+<h3>METODOLOGY</h3>
+<p>To do this security report, I have used relatively simple tools. Having access to the source code of the server, I could first check what its creator had done. By seeing this code, I inferred that I would only need cURL for XSS. Another method that I used to do this task was using MongoDB commands on query strings.</p>
+<h3>ABSTRACT OF FINDINGS</h3>
+<p>I found three security and privacy issues in this code. In terms of privacy, there is an easy way of seeing every passenger record. In terms of security, I found two issues of importance. First of all, any hacker can insert the information they want even in latitude and longitude, which can cause issues in the long term. The second security issue is related to this first one. Hackers could insert code in this fields that would get executed when the user runs the program.
+<h3>ISSUES FOUND</h3>
+<ol>
+	<li value="1"><p><u>Data leak:</u> This issue can be found when trying to access the /passenger.json route. If the user inserts the command [$ne] after the word "username" and then "=" and a username that is not in the collection of passengers, the json document would include the every record in this collection. This is a very severe issue in terms of privacy, since whoever access it would be able to track the location of users.</p>
+	<p>The creator of the app should have added the "validator" package, to be able of controlling the usage of special characters such as [] or $ in the query string. By using the ".escape" sanitizer, they could select some characters that would not be read.</p>
+	<p>This is a screenshot that proves how this issue is shown in a browser.</p>
+	<img src="Dataleak.jpg"></li>
+	<li value="2"><p><u>Database injection:</u> This issue can be detected when accessing either the information about vehicles in the index of the page or in the /passenger.json route. If we see some strange information in one of these two routes, that means that the creator of the code was not careful enough to check what kind of data was posted to their database. However, this is not an issue that can be easily caused from the client side. This is because, the client side automatically retrieves the location of the user and sends it to the server. On the other hand, using cURL it is very easy to insert any kind of data into the database. This is the command I used to discover the issue:</p>
+	<img src="cmd-issue.jpg">
+	<p>Initially, this might not seem as a very severe issue, because it can only be caused by a hacker. However, it is important to avoid this issue since it can cause more dangerous problems such as XSS.</p>
+	<p>We can see how this issue is shown in the browser in the picture added in the past example.</p>
+	<p>To solve it, the software engineer should have checked if the input in "lat" and "lng" were numbers. To do this, we can use the validator package again. The following line would help solve this problem: "validator.whitelist('^[0-9]+ .+$')", as it would remove every character except for numbers and dots.</p></li>
+	<li value="3"><p><u>Cross-Site Scripting:</u> This issue appears when we access the Heroku app index. As I said in my last point, it is an issue very closely related to database injection. The difference is that, instead of inserting random characters, I inserted a script that would cause a very simple alert window to pop up to the user. As in the last case, this is a severe issue, since a hacker could insert any kind of malicious code by using a simple tool such as cURL.</p>
+	<p>This is how the issue appears in the browser when we open the home page of this Heroku app:</p>
+	<img src="alert.jpg">
+	<p>This is a very simple example of what a hacker can get by iserting scripts in a database that will be eventually render. I did not do something that would cause too much trouble to a user, but with the same technique, we can redirect the user to a different webpage, or make them download a malicious software.</p>
+	<p>The solution to this problem would be checking which kind of characters are being inserted. The method I suggested in point two would work, but only for the values of latitude and longitude. However, the value username does not have any restrictions yet because, in theory, a user can choose any username they want. Therefore, a way to solve this would be using the "blacklist" of our validator package to substitute any special characters that might appear in the username, such as "<" ">" or "/".</p>		
+	</li>
+<h3>CONCLUSION</h3>
+<p>All in all, this product has some severe security and privacy issues that should be solved as soon as possible. I personally consider that the "Data leak" issue should be tackled first, because anyone can easily track the location of others by using a simple command. The other two issues are more complicated to spot, and would only affect the product in case it became successful. Obviously, the sooner they are solved, the better, but if I had to prioritize, I would focus on the data leak issue first.</p>
+<h3>REFERENCES</h3>
+<p><a href="https://flaviocopes.com/express-sanitize-input/">How to use express validator</a></p>
+<p><a href="https://portswigger.net/web-security/cross-site-scripting/reflected?fbclid=IwAR3L2vwk0xMxCA8tQ-LyKR2rA3j1O_2Xk9xe027MeCSuzwKxkfr4vxhZEn4">How to do XSS</a></p>
+<p><a href="https://docs.mongodb.com/manual/reference/operator/query/ne/">MongoDB commands</a></p>
+</ol>
+</body>
+</html>
